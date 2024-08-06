@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -22,17 +23,20 @@ export class UserController {
   }
 
   @Get(':id')
-  async readOne(@Param() params) {
+  async readOne(@Param('id', ParseIntPipe) params) {
     return { user: { params } };
   }
 
   @Patch(':id')
-  async update(@Body() body: Partial<CreateUserDto>, @Param() params) {
+  async update(
+    @Body() body: Partial<CreateUserDto>,
+    @Param('id', ParseIntPipe) params,
+  ) {
     return { user: { body, params } };
   }
 
   @Delete(':id')
-  async deleteUser(@Param() params) {
+  async deleteUser(@Param('id', ParseIntPipe) params) {
     return { params };
   }
 }
