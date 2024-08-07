@@ -9,12 +9,16 @@ import {
   Post,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateuserDto } from './dto/update-user.dto';
+import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
+  constructor(private readonly userService: UserService) {}
+
   @Post()
-  async create(@Body() body: CreateUserDto) {
-    return body;
+  async create(@Body() { name, email, password }: CreateUserDto) {
+    return await this.userService.create({ name, email, password });
   }
 
   @Get()
@@ -23,16 +27,16 @@ export class UserController {
   }
 
   @Get(':id')
-  async readOne(@Param('id', ParseIntPipe) params) {
-    return { user: { params } };
+  async readOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.findOne(id);
   }
 
   @Patch(':id')
   async update(
-    @Body() body: Partial<CreateUserDto>,
+    @Body() { email, name, password }: UpdateuserDto,
     @Param('id', ParseIntPipe) params,
   ) {
-    return { user: { body, params } };
+    return { user: { body: { email, name, password }, params } };
   }
 
   @Delete(':id')
