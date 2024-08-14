@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
   UseInterceptors,
@@ -13,6 +11,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateuserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { LogInterceptor } from 'src/interceptors/log.interceptor';
+import { ParamId } from 'src/decorators/param-id.decorator';
 @UseInterceptors(LogInterceptor)
 @Controller('users')
 export class UserController {
@@ -29,21 +28,21 @@ export class UserController {
   }
 
   @Get(':id')
-  async readOne(@Param('id', ParseIntPipe) id: number) {
+  async readOne(@ParamId() id) {
     return await this.userService.findOne(id);
   }
 
   @Patch(':id')
   async update(
     @Body() { email, name, password }: UpdateuserDto,
-    @Param('id', ParseIntPipe) params,
+    @ParamId() id,
   ) {
-    return { user: { body: { email, name, password }, params } };
+    return { user: { body: { email, name, password }, id } };
   }
 
   @UseInterceptors(LogInterceptor)
   @Delete(':id')
-  async deleteUser(@Param('id', ParseIntPipe) id) {
+  async deleteUser(@ParamId() id) {
     return await this.userService.delete(id);
   }
 }
