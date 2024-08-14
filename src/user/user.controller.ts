@@ -7,23 +7,27 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateuserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
+import { LogInterceptor } from 'src/interceptors/log.interceptor';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseInterceptors(LogInterceptor)
   @Post()
   async create(@Body() { name, email, password }: CreateUserDto) {
     return await this.userService.create({ name, email, password });
   }
 
+  @UseInterceptors(LogInterceptor)
   @Get()
   async readAll() {
-    return { users: [] };
+    return await this.userService.findAll();
   }
 
   @Get(':id')
@@ -39,8 +43,9 @@ export class UserController {
     return { user: { body: { email, name, password }, params } };
   }
 
+  @UseInterceptors(LogInterceptor)
   @Delete(':id')
-  async deleteUser(@Param('id', ParseIntPipe) params) {
-    return { params };
+  async deleteUser(@Param('id', ParseIntPipe) id) {
+    return await this.userService.delete(id);
   }
 }
