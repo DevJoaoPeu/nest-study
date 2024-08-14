@@ -7,10 +7,13 @@ export class LogInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     const dt = Date.now();
+    const request = context.switchToHttp().getRequest();
 
     return next.handle().pipe(
       tap(() => {
-        console.log(`Tempo de execução ${Date.now() - dt} millisegundos`);
+        console.log(`Url: ${request.url}`);
+        console.log(`Method: ${request.method}`);
+        console.log(`Tempo de execução ${Date.now() - dt} milisegundos`);
       }),
     );
   }

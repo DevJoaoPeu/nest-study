@@ -13,18 +13,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateuserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { LogInterceptor } from 'src/interceptors/log.interceptor';
-
+@UseInterceptors(LogInterceptor)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseInterceptors(LogInterceptor)
   @Post()
   async create(@Body() { name, email, password }: CreateUserDto) {
     return await this.userService.create({ name, email, password });
   }
 
-  @UseInterceptors(LogInterceptor)
   @Get()
   async readAll() {
     return await this.userService.findAll();
