@@ -12,4 +12,10 @@ export class AuthService {
   async checkToken(token: string) {
     //return this.JwtService.verify(token);
   }
+
+  async login() {}
+
+  async forget() {}
+
+  async reset() {}
 }

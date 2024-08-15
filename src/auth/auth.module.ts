@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'urjsi8du7f8hfjfon',
+      secret: '',
     }),
+    UserModule,
   ],
   controllers: [AuthController],
   exports: [],
