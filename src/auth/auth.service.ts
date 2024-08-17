@@ -21,16 +21,24 @@ export class AuthService {
           email: user.email,
         },
         {
-          expiresIn: '7 days',
+          expiresIn: '1 day',
           subject: String(user.id),
-          issuer: 'API NestJS',
+          issuer: 'login',
           audience: 'users',
         },
       ),
     };
   }
 
-  async checkToken() {}
+  async checkToken(token: string) {
+    try {
+      const data = await this.JwtService.verify(token);
+
+      return data;
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+  }
 
   async login(email: string, password: string) {
     const user = await this.prisma.user.findFirst({
