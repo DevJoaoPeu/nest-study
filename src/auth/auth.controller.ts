@@ -15,13 +15,13 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
+import { MulterService } from 'src/multer/multer.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly userService: UserService,
+    private readonly multerService: MulterService,
     private readonly authServive: AuthService,
   ) {}
   @Post('login')
@@ -54,10 +54,6 @@ export class AuthController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('photo')
   async uploadPhoto(@UploadedFile() photo: Express.Multer.File) {
-    const result = await writeFile(
-      join(__dirname, '..', '..', 'storage', 'photos', 'photo-128791.png'),
-      photo.buffer,
-    );
-    return { result };
+    return await this.multerService.upload(photo);
   }
 }
