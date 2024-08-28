@@ -4,11 +4,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 import { AuthRegisterDto } from './dto/auth-register.dto';
 import { compare, hash } from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from 'src/user/entity/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -16,9 +18,11 @@ export class AuthService {
     private readonly JwtService: JwtService,
     private readonly userService: UserService,
     private readonly mailer: MailerService,
+    @InjectRepository(UserEntity)
+    private readonly repository: Repository<UserEntity>,
   ) {}
 
-  async createToken(user: User) {
+  async createToken(user) {
     return {
       acessToken: this.JwtService.sign(
         {
@@ -46,7 +50,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.repository.findOne({
       where: {
         email,
       },
@@ -64,7 +68,7 @@ export class AuthService {
   }
 
   async forget(email: string) {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.repository.findOne({
       where: {
         email,
       },
@@ -108,12 +112,7 @@ export class AuthService {
 
       password = await hash(password, 10);
 
-      const user = await this.prisma.user.update({
-        where: { id: Number(data.id) },
-        data: {
-          password,
-        },
-      });
+      const user = await this.repository.update(data.id, { password });
 
       return await this.createToken(user);
     } catch (error) {
